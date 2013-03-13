@@ -5,7 +5,7 @@ use LWP::UserAgent;
 use JSON qw{decode_json};
 use Carp;
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 sub new {
     my ($class, %options) = @_;
@@ -35,15 +35,16 @@ sub open {
         unless $path =~ m!^/!;
     my $commit = $self->__fetch_root();
     $path =~ s!/$!!;
+    $path = '/' if $path eq '';
     my $f_data = $self->geturl("/contents$path?ref=$commit");
     if (ref($f_data) eq 'ARRAY') {
         # a directory
-        my ($name) = $path =~ m!/([^/]+)$!;
+        my ($name) = $path =~ m!/([^/]*)$!;
         my $dir = {
             FS => $self,
             content => $f_data,
             name => $name,
-            path => substr($path, 1),
+            path => ( $path eq '/' ? '' : substr($path, 1) ),
         };
         return bless $dir, 'WWW::Github::Files::Dir';
     }
@@ -133,7 +134,7 @@ sub readdir {
         # this is a file object created from directory listing. 
         # need to fetch the content
         my $f_data = $self->{FS}->open('/'.$self->{path});
-        $self->{content} = $f_data;
+        $self->{content} = $f_data->{content};
     }
     my @files;
     foreach my $rec (@{ $self->{content} }) {
@@ -172,6 +173,23 @@ WWW::Github::Files - Read files and directories from Github
 Using Github API to browse a git resp easily and download files
 
 This modules is a thin warper around the API, just to make life easier
+
+=head1 ALTERNATIVES
+
+The easiest way to get a file off Github is to use the raw url:
+
+https://raw.github.com/semuel/perlmodule-WWW-Github-Files/master/MANIFEST
+
+This will return the content of this module's MANIFEST file. Easy, but 
+the file have to be public and you need to know beforehand where exactly 
+it is. (this method does not fetch directory content)
+
+Also, if you download two files under 'master', there is a chance that a
+commit happened in the middle and you get two files from two different
+versions of the respo. Of course you can fetch the current commit and
+use it instead of master, but then it is less easy
+
+This module let you use Access Token for permission, and scan directories
 
 =head1 CONSTRUCTOR OPTIONS
 
@@ -252,7 +270,7 @@ returns a list of file/dir objects that this directory contains
 
 =head1 AUTHOR
  
-Fomberg Shmuel, E<lt>owner@semuel.co.ilE<gt>
+Fomberg Shmuel, E<lt>shmuelfomberg@gmail.comE<gt>
  
 =head1 COPYRIGHT AND LICENSE
  
