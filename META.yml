@@ -22,4 +22,4 @@ requires:
   File::Spec: 0
   LWP::Protocol::https: 0
   LWP::UserAgent: 6.04
-version: 0.1
+version: 0.11

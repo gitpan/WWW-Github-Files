@@ -5,7 +5,7 @@ use LWP::UserAgent;
 use JSON qw{decode_json};
 use Carp;
 
-our $VERSION = 0.10;
+our $VERSION = 0.11;
 
 sub new {
     my ($class, %options) = @_;
@@ -89,7 +89,7 @@ sub geturl {
     $method ||= 'get';
     my $res = $token->$method($self->{apiurl} . $url);
     if (!$res->is_success()) {
-        die "Failed to read $self->{apiurl}$url from github: ".$res->message();
+        die "Failed to read $self->{apiurl}$url from github: ".$res->message(). ", ".$res->content;
     }
     my $content = $res->content;
     return decode_json($content);
