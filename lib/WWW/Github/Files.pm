@@ -5,7 +5,7 @@ use LWP::UserAgent;
 use JSON qw{decode_json};
 use Carp;
 
-our $VERSION = 0.11;
+our $VERSION = 0.12;
 
 sub new {
     my ($class, %options) = @_;

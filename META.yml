@@ -20,6 +20,7 @@ no_index:
 requires:
   Carp: 0
   File::Spec: 0
+  JSON: 0
   LWP::Protocol::https: 0
   LWP::UserAgent: 6.04
-version: 0.11
+version: 0.12
